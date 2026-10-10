@@ -60,6 +60,7 @@ function SortMenu({ side }: { side: Side }) {
       : sort.direction === 'asc'
         ? IconSortAscending
         : IconSortDescending
+  const text = sort.by === 'none' ? 'Sort' : sort.by === 'key' ? 'Key' : 'Value'
   const label =
     sort.by === 'none'
       ? 'Sort fields'
@@ -67,22 +68,18 @@ function SortMenu({ side }: { side: Side }) {
 
   return (
     <DropdownMenu>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              aria-label={label}
-              data-active={sort.by !== 'none'}
-              className="data-[active=true]:text-foreground"
-            >
-              <Icon />
-            </Button>
-          </DropdownMenuTrigger>
-        </TooltipTrigger>
-        <TooltipContent>{label}</TooltipContent>
-      </Tooltip>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="xs"
+          aria-label={label}
+          data-active={sort.by !== 'none'}
+          className="text-muted-foreground data-[active=true]:text-foreground"
+        >
+          <Icon data-icon="inline-start" />
+          {text}
+        </Button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuLabel className="text-muted-foreground">
           Sort by
