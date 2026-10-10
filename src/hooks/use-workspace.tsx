@@ -16,7 +16,7 @@ import type {
 import { getFormat } from '#/lib/formats'
 import type { FormatAdapter, ParseResult } from '#/lib/formats'
 import { tryParsePath } from '#/lib/model/path'
-import { resolvePath } from '#/lib/model/resolve'
+import { formatPrimitive, isPrimitive, resolvePath } from '#/lib/model/resolve'
 import { buildFieldTree, indexTree, listFields } from '#/lib/model/tree'
 import type { TreeIndex } from '#/lib/model/tree'
 import type { FieldNode, Side } from '#/lib/model/types'
@@ -182,6 +182,21 @@ export function useWorkspace(): Workspace {
     throw new Error('useWorkspace must be used inside <WorkspaceProvider>')
   }
   return workspace
+}
+
+/** First primitive value at `path`, for previews and exports. */
+export function samplePreview(state: SideState, path: string): string | null {
+  const node = state.tree?.byPath.get(path)
+  if (node) {
+    if (node.samples.length) return formatPrimitive(node.samples[0])
+    if (node.kind === 'object' || node.kind === 'array') return null
+  }
+  if (!state.parsed?.ok) return null
+  const segments = tryParsePath(path)
+  const value = segments
+    ? resolvePath(state.parsed.value, segments).find(isPrimitive)
+    : undefined
+  return value === undefined ? null : formatPrimitive(value)
 }
 
 export function isRequired(workspace: Workspace, side: Side, path: string) {

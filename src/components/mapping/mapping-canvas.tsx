@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useSelector } from '@tanstack/react-store'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '#/components/ui/resizable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { removeMappings } from '#/db/actions'
 import { useMediaQuery } from '#/hooks/use-media-query'
@@ -12,8 +17,44 @@ import type { MappingCanvasApi } from './canvas-context'
 import { ConnectorLayer } from './connector-layer'
 import { FieldTree } from './field-tree'
 import { MapToDialog } from './map-to-dialog'
+import { MappingsTable } from './mappings-table'
+import { RequiredList } from './required-list'
 import { useConnection } from './use-connection'
 import { useTreeView } from './use-tree-view'
+
+function BottomPanel() {
+  const { mappings, required, requiredSatisfied } = useWorkspace()
+  return (
+    <Tabs
+      defaultValue="mappings"
+      className="flex h-full min-h-0 flex-col gap-0"
+    >
+      <TabsList
+        variant="line"
+        className="h-9 w-full justify-start border-b px-2"
+      >
+        <TabsTrigger value="mappings" className="flex-none px-2">
+          Mappings
+          <span className="text-muted-foreground tabular-nums">
+            {mappings.length}
+          </span>
+        </TabsTrigger>
+        <TabsTrigger value="required" className="flex-none px-2">
+          Required
+          <span className="text-muted-foreground tabular-nums">
+            {requiredSatisfied}/{required.length}
+          </span>
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="mappings" className="min-h-0">
+        <MappingsTable />
+      </TabsContent>
+      <TabsContent value="required" className="min-h-0">
+        <RequiredList />
+      </TabsContent>
+    </Tabs>
+  )
+}
 
 export function MappingCanvas() {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -76,25 +117,33 @@ export function MappingCanvas() {
   return (
     <MappingCanvasContext value={api}>
       {wide ? (
-        <div
-          ref={canvasRef}
-          className="relative grid h-full min-h-0 grid-cols-[minmax(0,1fr)_clamp(64px,10vw,160px)_minmax(0,1fr)]"
-          onPointerMove={connection.onCanvasPointerMove}
-          onPointerDown={(event) => {
-            const element = event.target as Element
-            if (element.closest('[data-keep-selection]')) return
-            mappingUi.actions.selectMapping(null)
-          }}
-        >
-          <FieldTree side="source" />
-          <div
-            aria-hidden
-            className="border-x"
-            onClick={() => mappingUi.actions.cancelConnection()}
-          />
-          <FieldTree side="target" />
-          <ConnectorLayer canvasRef={canvasRef} />
-        </div>
+        <ResizablePanelGroup orientation="vertical">
+          <ResizablePanel defaultSize="68" minSize="30">
+            <div
+              ref={canvasRef}
+              className="relative grid h-full min-h-0 grid-cols-[minmax(0,1fr)_clamp(64px,10vw,160px)_minmax(0,1fr)]"
+              onPointerMove={connection.onCanvasPointerMove}
+              onPointerDown={(event) => {
+                const element = event.target as Element
+                if (element.closest('[data-keep-selection]')) return
+                mappingUi.actions.selectMapping(null)
+              }}
+            >
+              <FieldTree side="source" />
+              <div
+                aria-hidden
+                className="border-x"
+                onClick={() => mappingUi.actions.cancelConnection()}
+              />
+              <FieldTree side="target" />
+              <ConnectorLayer canvasRef={canvasRef} />
+            </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize="32" minSize="12">
+            <BottomPanel />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       ) : (
         <Tabs
           defaultValue="source"
@@ -107,12 +156,18 @@ export function MappingCanvas() {
             <TabsTrigger value="target" className="flex-1">
               Target
             </TabsTrigger>
+            <TabsTrigger value="mappings" className="flex-1">
+              Mappings
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="source" className="flex min-h-0 flex-col">
             <FieldTree side="source" />
           </TabsContent>
           <TabsContent value="target" className="flex min-h-0 flex-col">
             <FieldTree side="target" />
+          </TabsContent>
+          <TabsContent value="mappings" className="min-h-0">
+            <BottomPanel />
           </TabsContent>
         </Tabs>
       )}
