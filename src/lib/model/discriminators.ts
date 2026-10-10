@@ -25,35 +25,37 @@ export function discriminatorCandidates(
     }
   }
 
-  const scored = [...valuesByField].map(([field, values]) => {
-    const distinct = [...new Set(values)]
-    const coverage = values.length / objects.length
-    const nameScore = STRONG_NAME.test(field)
-      ? 3
-      : WEAK_NAME.test(field)
-        ? 1.5
-        : 0
-    const repeats = distinct.length < objects.length
-    const numeric = distinct.every((v) => typeof v === 'number')
-    const score =
-      nameScore +
-      coverage +
-      (repeats ? 1 : 0) -
-      (distinct.length / objects.length) * 0.5 -
-      (numeric ? 1 : 0)
-    return {
-      candidate: {
-        field,
-        values: distinct.slice(0, 8),
-        coverage,
-        suggested:
-          coverage >= 0.8 &&
-          distinct.length >= 2 &&
-          (nameScore > 0 || (repeats && !numeric)),
-      },
-      score,
-    }
-  })
+  const scored = [...valuesByField]
+    .filter(([, values]) => new Set(values).size >= 2)
+    .map(([field, values]) => {
+      const distinct = [...new Set(values)]
+      const coverage = values.length / objects.length
+      const nameScore = STRONG_NAME.test(field)
+        ? 3
+        : WEAK_NAME.test(field)
+          ? 1.5
+          : 0
+      const repeats = distinct.length < objects.length
+      const numeric = distinct.every((v) => typeof v === 'number')
+      const score =
+        nameScore +
+        coverage +
+        (repeats ? 1 : 0) -
+        (distinct.length / objects.length) * 0.5 -
+        (numeric ? 1 : 0)
+      return {
+        candidate: {
+          field,
+          values: distinct.slice(0, 8),
+          coverage,
+          suggested:
+            coverage >= 0.8 &&
+            distinct.length >= 2 &&
+            (nameScore > 0 || (repeats && !numeric)),
+        },
+        score,
+      }
+    })
 
   return scored
     .sort((a, b) => b.score - a.score)
