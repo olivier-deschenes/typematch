@@ -24,7 +24,7 @@ function RequiredProgress() {
       ) : (
         <IconAlertTriangle className="size-4 text-warning" aria-hidden />
       )}
-      <span className="text-muted-foreground">Required</span>
+      <span className="hidden text-muted-foreground sm:inline">Required</span>
       <span
         className={cn(
           'font-medium tabular-nums',
@@ -39,14 +39,17 @@ function RequiredProgress() {
 
 export function AppHeader({ actions }: { actions?: React.ReactNode }) {
   return (
-    <header className="flex h-12 shrink-0 items-center gap-3 border-b px-4">
+    <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4 sm:gap-3">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-background focus:px-3 focus:py-2 focus:text-sm"
       >
         Skip to content
       </a>
-      <Link to="/" className="mr-2 text-sm font-semibold tracking-tight">
+      <Link
+        to="/"
+        className="mr-1 hidden text-sm font-semibold tracking-tight sm:mr-2 sm:inline"
+      >
         Typematch
       </Link>
       <nav aria-label="Steps" className="flex items-center gap-0.5">
@@ -61,7 +64,7 @@ export function AppHeader({ actions }: { actions?: React.ReactNode }) {
           Map
         </Link>
       </nav>
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
         <RequiredProgress />
         {actions}
       </div>

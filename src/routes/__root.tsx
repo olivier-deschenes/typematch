@@ -1,5 +1,6 @@
 import {
   HeadContent,
+  Link,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
@@ -10,6 +11,14 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import { getLocale } from '#/paraglide/runtime'
 
+import { Button } from '#/components/ui/button'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '#/components/ui/empty'
 import { Toaster } from '#/components/ui/sonner'
 import { TooltipProvider } from '#/components/ui/tooltip'
 
@@ -51,7 +60,26 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
+
+function NotFound() {
+  return (
+    <Empty className="h-dvh">
+      <EmptyHeader>
+        <EmptyTitle>This page doesn’t exist</EmptyTitle>
+        <EmptyDescription>
+          Typematch has two steps: load your sources, then map their fields.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button asChild variant="outline">
+          <Link to="/">Go to sources</Link>
+        </Button>
+      </EmptyContent>
+    </Empty>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (

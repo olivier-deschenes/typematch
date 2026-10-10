@@ -231,14 +231,19 @@ export function WorkspaceActions() {
       <Button
         variant="outline"
         size="sm"
+        aria-label="Import mapping"
         onClick={() => fileInput.current?.click()}
       >
         <IconFileImport data-icon="inline-start" />
-        Import
+        <span className="hidden sm:inline">Import</span>
       </Button>
-      <Button size="sm" onClick={() => setExporting(true)}>
+      <Button
+        size="sm"
+        aria-label="Export mapping"
+        onClick={() => setExporting(true)}
+      >
         <IconFileExport data-icon="inline-start" />
-        Export
+        <span className="hidden sm:inline">Export</span>
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

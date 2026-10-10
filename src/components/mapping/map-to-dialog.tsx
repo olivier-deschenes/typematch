@@ -1,3 +1,4 @@
+import { rankItem, rankings } from '@tanstack/match-sorter-utils'
 import { IconCheck } from '@tabler/icons-react'
 import {
   Command,
@@ -15,6 +16,12 @@ import { formatPrimitive } from '#/lib/model/resolve'
 import { otherSide } from '#/lib/model/types'
 import type { FieldRef } from '#/stores/mapping-ui'
 import { connect } from './use-connection'
+
+/** Same ranking as the tree search; stricter than cmdk's fuzzy default. */
+function rankFilter(value: string, search: string) {
+  const result = rankItem(value, search, { threshold: rankings.ACRONYM })
+  return result.passed ? result.rank / rankings.CASE_SENSITIVE_EQUAL : 0
+}
 
 /** Keyboard-friendly alternative to drawing arrows. */
 export function MapToDialog({
@@ -38,7 +45,7 @@ export function MapToDialog({
       title={`Map ${field ? describePath(field.path) : ''}`}
       description={`Choose a ${side} field to map to`}
     >
-      <Command>
+      <Command filter={rankFilter}>
         <CommandInput placeholder={`Search ${side} fields…`} />
         <CommandList>
           <CommandEmpty>No fields found.</CommandEmpty>
