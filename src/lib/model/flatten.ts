@@ -1,5 +1,7 @@
 import { ancestorPaths } from './path'
 import type { MatchInfo, TreeFilter } from './search'
+import { DEFAULT_SORT, sortChildren } from './sort'
+import type { TreeSort } from './sort'
 import type { TreeIndex } from './tree'
 import type { FieldNode } from './types'
 
@@ -20,11 +22,13 @@ export interface FlatTree {
 /**
  * Turns the tree into the list of rows to render. An object root is
  * implicit (its fields are top-level rows); other roots render as a row.
+ * Siblings follow `sort`; the tree itself keeps document order.
  */
 export function flattenTree(
   root: FieldNode,
   collapsed: ReadonlySet<string>,
   filter: TreeFilter | null,
+  sort: TreeSort = DEFAULT_SORT,
 ): FlatTree {
   const rows: Array<FlatRow> = []
   const rowIndex = new Map<string, number>()
@@ -43,11 +47,13 @@ export function flattenTree(
       expanded,
       match: filter?.matches.get(node.path),
     })
-    if (expanded) for (const child of node.children) visit(child, level + 1)
+    if (!expanded) return
+    for (const child of sortChildren(node.children, sort))
+      visit(child, level + 1)
   }
 
   if (root.kind === 'object') {
-    for (const child of root.children) visit(child, 0)
+    for (const child of sortChildren(root.children, sort)) visit(child, 0)
   } else {
     visit(root, 0)
   }

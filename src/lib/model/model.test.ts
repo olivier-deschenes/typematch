@@ -5,6 +5,7 @@ import { anchorRow, flattenTree } from './flatten'
 import { describePath, parsePath, serializePath } from './path'
 import { resolvePath } from './resolve'
 import { filterTree } from './search'
+import { sortChildren } from './sort'
 import { buildFieldTree, indexTree } from './tree'
 import type { ArrayView, FieldNode, PathSegment } from './types'
 
@@ -192,5 +193,50 @@ describe('filterTree and flattenTree', () => {
         null,
       ),
     ).toEqual({ index: flat.rowIndex.get('$.order.addresses'), exact: false })
+  })
+})
+
+describe('sortChildren', () => {
+  const node = (label: string, value?: FieldNode['value']): FieldNode => ({
+    path: `$.${label}`,
+    segments: [{ type: 'key', key: label }],
+    label,
+    role: 'field',
+    kind: value === undefined ? 'object' : 'string',
+    depth: 1,
+    value,
+    samples: value === undefined ? [] : [value],
+    occurrences: 1,
+    children: value === undefined ? [node(`${label}Child`, 1)] : [],
+  })
+  const fields = [
+    node('b', 10),
+    node('a', 9),
+    node('item10', 'x'),
+    node('item2', null),
+    node('nested'),
+  ]
+  const labels = (nodes: Array<FieldNode>) => nodes.map((n) => n.label)
+
+  it('keeps document order by default', () => {
+    expect(sortChildren(fields, { by: 'none', direction: 'asc' })).toBe(fields)
+  })
+
+  it('sorts keys naturally in both directions', () => {
+    expect(
+      labels(sortChildren(fields, { by: 'key', direction: 'asc' })),
+    ).toEqual(['a', 'b', 'item2', 'item10', 'nested'])
+    expect(
+      labels(sortChildren(fields, { by: 'key', direction: 'desc' })),
+    ).toEqual(['nested', 'item10', 'item2', 'b', 'a'])
+  })
+
+  it('sorts values with valueless fields last', () => {
+    expect(
+      labels(sortChildren(fields, { by: 'value', direction: 'asc' })),
+    ).toEqual(['a', 'b', 'item10', 'item2', 'nested'])
+    expect(
+      labels(sortChildren(fields, { by: 'value', direction: 'desc' })),
+    ).toEqual(['item10', 'b', 'a', 'item2', 'nested'])
   })
 })

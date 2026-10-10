@@ -1,4 +1,6 @@
 import { createStore } from '@tanstack/react-store'
+import { DEFAULT_SORT } from '#/lib/model/sort'
+import type { TreeSort } from '#/lib/model/sort'
 import type { Side } from '#/lib/model/types'
 
 export type FilterMode = 'all' | 'mapped' | 'unmapped' | 'required'
@@ -20,6 +22,7 @@ export interface MappingUiState {
   dropTarget: FieldRef | null
   collapsed: Record<Side, ReadonlySet<string>>
   filter: Record<Side, FilterMode>
+  sort: Record<Side, TreeSort>
 }
 
 const initialState: MappingUiState = {
@@ -31,6 +34,7 @@ const initialState: MappingUiState = {
   dropTarget: null,
   collapsed: { source: new Set(), target: new Set() },
   filter: { source: 'all', target: 'all' },
+  sort: { source: DEFAULT_SORT, target: DEFAULT_SORT },
 }
 
 export const mappingUi = createStore(initialState, ({ setState }) => ({
@@ -87,5 +91,8 @@ export const mappingUi = createStore(initialState, ({ setState }) => ({
   },
   setFilter(side: Side, filter: FilterMode) {
     setState((s) => ({ ...s, filter: { ...s.filter, [side]: filter } }))
+  },
+  setSort(side: Side, sort: TreeSort) {
+    setState((s) => ({ ...s, sort: { ...s.sort, [side]: sort } }))
   },
 }))

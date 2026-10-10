@@ -51,6 +51,7 @@ export function useTreeView(side: Side): TreeView {
   )
   const filterMode = useSelector(mappingUi, (s) => s.filter[side])
   const collapsed = useSelector(mappingUi, (s) => s.collapsed[side])
+  const sort = useSelector(mappingUi, (s) => s.sort[side])
 
   const mapped = workspace.mappedCount[side]
   const rules = workspace.rules
@@ -71,8 +72,8 @@ export function useTreeView(side: Side): TreeView {
   }, [tree, debouncedQuery, filterMode, mapped, rules, side])
 
   const flat = useMemo(
-    () => (tree ? flattenTree(tree.root, collapsed, filter) : EMPTY_FLAT),
-    [tree, collapsed, filter],
+    () => (tree ? flattenTree(tree.root, collapsed, filter, sort) : EMPTY_FLAT),
+    [tree, collapsed, filter, sort],
   )
 
   const scrollRef = useRef<HTMLDivElement>(null)

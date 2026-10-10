@@ -1,12 +1,24 @@
 import { useState } from 'react'
 import { useSelector } from '@tanstack/react-store'
 import {
+  IconArrowsSort,
   IconChevronsDown,
   IconChevronsUp,
   IconSearch,
+  IconSortAscending,
+  IconSortDescending,
   IconX,
 } from '@tabler/icons-react'
 import { Button } from '#/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '#/components/ui/dropdown-menu'
 import {
   InputGroup,
   InputGroupAddon,
@@ -22,6 +34,7 @@ import {
 } from '#/components/ui/tooltip'
 import { fieldKey, setRequired } from '#/db/actions'
 import { useWorkspace } from '#/hooks/use-workspace'
+import type { SortBy, SortDirection } from '#/lib/model/sort'
 import { walkTree } from '#/lib/model/tree'
 import type { Side } from '#/lib/model/types'
 import { cn } from '#/lib/utils'
@@ -38,6 +51,77 @@ const FILTERS: Array<{ value: FilterMode; label: string }> = [
   { value: 'unmapped', label: 'Unmapped' },
   { value: 'required', label: 'Required' },
 ]
+
+function SortMenu({ side }: { side: Side }) {
+  const sort = useSelector(mappingUi, (s) => s.sort[side])
+  const Icon =
+    sort.by === 'none'
+      ? IconArrowsSort
+      : sort.direction === 'asc'
+        ? IconSortAscending
+        : IconSortDescending
+  const label =
+    sort.by === 'none'
+      ? 'Sort fields'
+      : `Sorted by ${sort.by}, ${sort.direction === 'asc' ? 'ascending' : 'descending'}`
+
+  return (
+    <DropdownMenu>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label={label}
+              data-active={sort.by !== 'none'}
+              className="data-[active=true]:text-foreground"
+            >
+              <Icon />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent align="end" className="w-44">
+        <DropdownMenuLabel className="text-muted-foreground">
+          Sort by
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={sort.by}
+          onValueChange={(by) =>
+            mappingUi.actions.setSort(side, { ...sort, by: by as SortBy })
+          }
+        >
+          <DropdownMenuRadioItem value="none">
+            Document order
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="key">Key</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="value">Value</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuRadioGroup
+          value={sort.direction}
+          onValueChange={(direction) =>
+            mappingUi.actions.setSort(side, {
+              by: sort.by === 'none' ? 'key' : sort.by,
+              direction: direction as SortDirection,
+            })
+          }
+        >
+          <DropdownMenuRadioItem value="asc">
+            <IconSortAscending className="text-muted-foreground" />
+            Ascending
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="desc">
+            <IconSortDescending className="text-muted-foreground" />
+            Descending
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 
 function TreeHeader({ side }: { side: Side }) {
   const { views } = useMappingCanvas()
@@ -66,6 +150,7 @@ function TreeHeader({ side }: { side: Side }) {
           {doc?.name || workspace.sides[side].format?.label}
         </span>
         <div className="ml-auto flex shrink-0 items-center">
+          <SortMenu side={side} />
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
