@@ -7,6 +7,11 @@ import { xmlFormat } from './xml'
 registerFormat(jsonFormat)
 registerFormat(xmlFormat)
 
-export { detectFormat, getFormat, listFormats, registerFormat } from './registry'
+export {
+  detectFormat,
+  getFormat,
+  listFormats,
+  registerFormat,
+} from './registry'
 export { lineColumnToOffset, offsetToLineColumn } from './types'
 export type { FormatAdapter, ParseError, ParseResult } from './types'

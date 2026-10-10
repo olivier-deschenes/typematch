@@ -9,8 +9,7 @@ export interface ParseError {
 }
 
 export type ParseResult =
-  | { ok: true; value: unknown }
-  | { ok: false; error: ParseError }
+  { ok: true; value: unknown } | { ok: false; error: ParseError }
 
 /**
  * A pluggable document format. Every adapter turns raw text into a plain

@@ -21,6 +21,18 @@ const parser = new XMLParser({
   numberParseOptions: { hex: false, leadingZeros: false, eNotation: false },
 })
 
+/** fast-xml-parser lists attributes last; show them first, like the markup. */
+function attributesFirst(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(attributesFirst)
+  if (typeof value !== 'object' || value === null) return value
+  const entries = Object.entries(value).map(
+    ([key, child]) => [key, attributesFirst(child)] as const,
+  )
+  const rank = (key: string) =>
+    key.startsWith('@') ? 0 : key === '#text' ? 2 : 1
+  return Object.fromEntries(entries.sort(([a], [b]) => rank(a) - rank(b)))
+}
+
 export const xmlFormat: FormatAdapter = {
   id: 'xml',
   label: 'XML',
@@ -52,7 +64,7 @@ export const xmlFormat: FormatAdapter = {
       }
     }
     try {
-      return { ok: true, value: parser.parse(raw) }
+      return { ok: true, value: attributesFirst(parser.parse(raw)) }
     } catch (error) {
       return {
         ok: false,

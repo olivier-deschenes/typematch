@@ -36,8 +36,18 @@ export const sampleSource = {
           },
         ],
         items: [
-          { sku: 'LMP-001', description: 'Desk lamp', quantity: 2, price: 79.99 },
-          { sku: 'CBL-210', description: 'USB-C cable', quantity: 3, price: 29.99 },
+          {
+            sku: 'LMP-001',
+            description: 'Desk lamp',
+            quantity: 2,
+            price: 79.99,
+          },
+          {
+            sku: 'CBL-210',
+            description: 'USB-C cable',
+            quantity: 3,
+            price: 29.99,
+          },
         ],
         shipping: { method: 'express', weightKg: 3.4, insured: false },
         notes: ['Leave at reception', 'Fragile'],
