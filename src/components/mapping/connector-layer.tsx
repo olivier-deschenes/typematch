@@ -380,7 +380,7 @@ export function ConnectorLayer({
               ? `Remove ${selectedLine.ids.length} mappings`
               : 'Remove mapping'
           }
-          className="absolute z-20 flex size-5 -translate-1/2 items-center justify-center border bg-background text-muted-foreground hover:border-foreground hover:text-foreground"
+          className="absolute z-20 flex size-5 -translate-1/2 items-center justify-center border bg-background text-muted-foreground hover:border-destructive hover:text-destructive"
           style={(() => {
             const mid = midpoint(
               selectedLine.from.x,

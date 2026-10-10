@@ -118,7 +118,7 @@ export function SourcePanel({ side }: { side: Side }) {
       aria-labelledby={`${side}-heading`}
       className={cn(
         'relative flex min-h-[420px] min-w-0 flex-col border bg-background lg:min-h-0',
-        dragging && 'border-foreground',
+        dragging && 'border-highlight',
       )}
       onDragOver={(event) => {
         if (event.dataTransfer.types.includes('Files')) {
@@ -284,7 +284,8 @@ export function SourcePanel({ side }: { side: Side }) {
       </footer>
 
       {dragging && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/80 text-sm font-medium">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-background/85 text-sm font-medium text-highlight">
+          <IconFileUpload className="size-4" aria-hidden />
           Drop to load into {SIDE_LABEL[side].toLowerCase()}
         </div>
       )}

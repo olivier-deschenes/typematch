@@ -56,7 +56,7 @@ const theme = EditorView.theme({
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection':
     {
       backgroundColor:
-        'color-mix(in oklch, var(--info) 22%, transparent) !important',
+        'color-mix(in oklch, var(--highlight) 22%, transparent) !important',
     },
   '.cm-foldPlaceholder': {
     backgroundColor: 'var(--muted)',

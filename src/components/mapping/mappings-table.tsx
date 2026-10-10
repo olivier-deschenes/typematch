@@ -16,6 +16,7 @@ import {
 import {
   IconAlertTriangle,
   IconArrowRight,
+  IconCircleCheck,
   IconArrowsSort,
   IconSearch,
   IconSortAscending,
@@ -39,7 +40,6 @@ import {
 import { removeMappings, setMappingNote } from '#/db/actions'
 import { samplePreview, useWorkspace } from '#/hooks/use-workspace'
 import { describePath } from '#/lib/model/path'
-import { cn } from '#/lib/utils'
 import { mappingUi } from '#/stores/mapping-ui'
 import { useMappingCanvas } from './canvas-context'
 
@@ -152,7 +152,10 @@ const columns = helper.columns([
     cell: ({ getValue }) => {
       const status = getValue()
       return status === 'ok' ? (
-        <span className="text-muted-foreground">OK</span>
+        <span className="flex items-center gap-1 text-muted-foreground">
+          <IconCircleCheck className="size-3.5 text-success" aria-hidden />
+          OK
+        </span>
       ) : (
         <span className="flex items-center gap-1 text-warning">
           <IconAlertTriangle className="size-3.5" aria-hidden />
@@ -315,7 +318,7 @@ export function MappingsTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.id === selectedId ? 'selected' : undefined}
-                  className={cn('cursor-pointer')}
+                  className="cursor-pointer data-[state=selected]:bg-highlight/10"
                   onPointerEnter={() => mappingUi.actions.hoverMapping(row.id)}
                   onPointerLeave={() => mappingUi.actions.hoverMapping(null)}
                   onClick={() => {

@@ -30,24 +30,27 @@ import { ROW_HEIGHT } from './use-tree-view'
 
 export type RequiredState = 'none' | 'satisfied' | 'unsatisfied'
 
+/** Leaf icons share the editor's syntax colors; containers stay neutral. */
 function TypeIcon({ node }: { node: FieldNode }) {
-  const className = 'size-3.5 shrink-0 text-muted-foreground'
-  if (node.role === 'group') return <IconFilter className={className} />
-  if (node.label.startsWith('@')) return <IconAt className={className} />
-  if (node.label === '#text') return <IconAlignLeft className={className} />
+  const icon = (Icon: typeof IconHash, color = 'text-muted-foreground') => (
+    <Icon className={cn('size-3.5 shrink-0', color)} />
+  )
+  if (node.role === 'group') return icon(IconFilter)
+  if (node.label.startsWith('@')) return icon(IconAt, 'text-syntax-attr')
+  if (node.label === '#text') return icon(IconAlignLeft, 'text-syntax-string')
   switch (node.kind) {
     case 'object':
-      return <IconBraces className={className} />
+      return icon(IconBraces)
     case 'array':
-      return <IconBrackets className={className} />
+      return icon(IconBrackets)
     case 'number':
-      return <IconHash className={className} />
+      return icon(IconHash, 'text-syntax-number')
     case 'boolean':
-      return <IconToggleLeft className={className} />
+      return icon(IconToggleLeft, 'text-syntax-atom')
     case 'null':
-      return <IconCircleDashed className={className} />
+      return icon(IconCircleDashed, 'text-syntax-atom')
     default:
-      return <IconLetterCase className={className} />
+      return icon(IconLetterCase, 'text-syntax-string')
   }
 }
 
@@ -56,7 +59,7 @@ function Highlight({ text, range }: { text: string; range?: Range }) {
   return (
     <>
       {text.slice(0, range[0])}
-      <mark className="bg-foreground/15 text-foreground">
+      <mark className="bg-highlight/20 text-foreground">
         {text.slice(range[0], range[1])}
       </mark>
       {text.slice(range[1])}
@@ -162,7 +165,7 @@ export function FieldRow({
         aria-label={`Connect ${node.label}`}
         data-mapped={mappedCount > 0}
         data-active={isOrigin || isDropTarget || highlighted}
-        className="size-2.5 rounded-full border border-muted-foreground/70 bg-background transition-transform hover:scale-150 hover:border-foreground data-[active=true]:border-foreground data-[active=true]:bg-foreground data-[mapped=true]:border-connector data-[mapped=true]:bg-connector data-[mapped=true]:data-[active=true]:border-foreground data-[mapped=true]:data-[active=true]:bg-foreground"
+        className="size-2.5 rounded-full border border-muted-foreground/70 bg-background transition-transform hover:scale-150 hover:border-highlight data-[active=true]:border-highlight data-[active=true]:bg-highlight data-[mapped=true]:border-connector data-[mapped=true]:bg-connector data-[mapped=true]:data-[active=true]:border-highlight data-[mapped=true]:data-[active=true]:bg-highlight"
         onPointerDown={(event) => beginDrag(field, event)}
         onClick={(event) => {
           event.stopPropagation()
@@ -185,10 +188,9 @@ export function FieldRow({
       className={cn(
         'group/row absolute inset-x-0 top-0 flex items-center text-xs select-none',
         'hover:bg-muted/60 aria-selected:bg-muted',
-        highlighted && 'bg-muted',
-        isOrigin && 'bg-muted',
-        isDropTarget &&
-          'bg-muted outline outline-1 -outline-offset-1 outline-foreground',
+        (highlighted || isOrigin || isDropTarget) &&
+          'bg-highlight/10 hover:bg-highlight/15 aria-selected:bg-highlight/15',
+        isDropTarget && 'outline outline-1 -outline-offset-1 outline-highlight',
         awaitingTarget && 'cursor-crosshair',
       )}
       style={{ height: ROW_HEIGHT, transform: `translateY(${top}px)` }}

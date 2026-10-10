@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { removeMappings } from '#/db/actions'
 import { useMediaQuery } from '#/hooks/use-media-query'
 import { useWorkspace } from '#/hooks/use-workspace'
+import { cn } from '#/lib/utils'
 import { mappingUi } from '#/stores/mapping-ui'
 import type { FieldRef } from '#/stores/mapping-ui'
 import { MappingCanvasContext } from './canvas-context'
@@ -41,7 +42,12 @@ function BottomPanel() {
         </TabsTrigger>
         <TabsTrigger value="required" className="flex-none px-2">
           Required
-          <span className="text-muted-foreground tabular-nums">
+          <span
+            className={cn(
+              'text-muted-foreground tabular-nums',
+              requiredSatisfied < required.length && 'text-warning',
+            )}
+          >
             {requiredSatisfied}/{required.length}
           </span>
         </TabsTrigger>
