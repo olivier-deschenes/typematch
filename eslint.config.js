@@ -15,6 +15,13 @@ export default [
     },
   },
   {
-    ignores: ['eslint.config.js', 'prettier.config.js'],
+    ignores: [
+      'eslint.config.js',
+      'prettier.config.js',
+      // Generated code: shadcn CLI components and Paraglide output.
+      'src/components/ui/**',
+      'src/paraglide/**',
+      'src/routeTree.gen.ts',
+    ],
   },
 ]

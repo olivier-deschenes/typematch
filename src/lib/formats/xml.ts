@@ -1,6 +1,5 @@
 import { xml } from '@codemirror/lang-xml'
-import { XMLParser } from 'fast-xml-parser'
-import { SyntaxValidator } from 'fast-xml-validator'
+import { XMLParser, XMLValidator } from 'fast-xml-parser'
 import formatXml from 'xml-formatter'
 import type { FormatAdapter } from './types'
 
@@ -50,16 +49,16 @@ export const xmlFormat: FormatAdapter = {
         error: { message: 'Document is empty', line: 1, column: 1 },
       }
     }
-    try {
-      SyntaxValidator.validate(raw)
-    } catch (error) {
-      const e = error as { message?: string; line?: number; col?: number }
+    // XMLValidator is marked deprecated in favour of fast-xml-validator,
+    // but that package depends on Node's Buffer and can't run in browsers.
+    const validation = XMLValidator.validate(raw)
+    if (validation !== true) {
       return {
         ok: false,
         error: {
-          message: e.message ?? 'Invalid XML document',
-          line: e.line ?? 1,
-          column: e.col ?? 1,
+          message: validation.err.msg,
+          line: validation.err.line,
+          column: validation.err.col,
         },
       }
     }
