@@ -351,7 +351,7 @@ export function FieldTree({ side }: { side: Side }) {
         aria-label={`${SIDE_LABEL[side]} fields`}
         aria-activedescendant={rows.length ? rowId(focused) : undefined}
         className={cn(
-          'relative min-h-0 flex-1 overflow-auto outline-none',
+          'relative min-h-0 flex-1 overflow-auto overscroll-contain outline-none',
           'focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset',
         )}
         onKeyDown={onKeyDown}

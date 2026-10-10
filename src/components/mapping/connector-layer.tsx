@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useSelector } from '@tanstack/react-store'
 import { IconX } from '@tabler/icons-react'
 import { removeMappings } from '#/db/actions'
@@ -84,7 +85,11 @@ function midpoint(x1: number, y1: number, x2: number, y2: number) {
   return { x: (x1 + x2) / 2, y: (y1 + y2) / 2 }
 }
 
-/** Re-renders on scroll/resize of either column, throttled to frames. */
+/**
+ * Re-renders on scroll/resize of either column. Scroll events fire once per
+ * frame before paint, so render synchronously there to keep arrows locked to
+ * their rows; a deferred update would trail the scrolled content by a frame.
+ */
 function useGeometryTick(
   canvasRef: React.RefObject<HTMLDivElement | null>,
   views: Record<Side, TreeView>,
@@ -96,12 +101,16 @@ function useGeometryTick(
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => setTick((t) => t + 1))
     }
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      flushSync(() => setTick((t) => t + 1))
+    }
     const elements = [
       views.source.scrollRef.current,
       views.target.scrollRef.current,
     ].filter((e): e is HTMLDivElement => !!e)
     for (const element of elements) {
-      element.addEventListener('scroll', schedule, { passive: true })
+      element.addEventListener('scroll', onScroll, { passive: true })
     }
     const observer = new ResizeObserver(schedule)
     if (canvasRef.current) observer.observe(canvasRef.current)
@@ -111,7 +120,7 @@ function useGeometryTick(
       cancelAnimationFrame(frame)
       observer.disconnect()
       for (const element of elements) {
-        element.removeEventListener('scroll', schedule)
+        element.removeEventListener('scroll', onScroll)
       }
     }
   }, [canvasRef, views.source.scrollRef, views.target.scrollRef])
