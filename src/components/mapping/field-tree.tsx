@@ -76,7 +76,7 @@ function SortMenu({ side }: { side: Side }) {
           size="xs"
           aria-label={label}
           data-active={sort.by !== 'none'}
-          className="text-muted-foreground data-[active=true]:text-foreground"
+          className="text-muted-foreground data-[active=true]:text-primary"
         >
           <Icon data-icon="inline-start" />
           {text}
@@ -152,9 +152,21 @@ function TreeHeader({ side }: { side: Side }) {
   }
 
   return (
-    <header className="flex flex-col gap-2 border-b p-2">
+    <header
+      className={cn(
+        'flex flex-col gap-2 border-b p-2',
+        side === 'source' ? 'bg-source-accent/5' : 'bg-target-accent/5',
+      )}
+    >
       <div className="flex min-w-0 items-center gap-2">
-        <h2 className="text-sm font-medium">{SIDE_LABEL[side]}</h2>
+        <h2
+          className={cn(
+            'text-sm font-medium',
+            side === 'source' ? 'text-source-accent' : 'text-target-accent',
+          )}
+        >
+          {SIDE_LABEL[side]}
+        </h2>
         <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">
           {doc?.name || workspace.sides[side].format?.label}
         </span>

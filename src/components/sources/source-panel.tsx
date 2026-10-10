@@ -118,7 +118,7 @@ export function SourcePanel({ side }: { side: Side }) {
       aria-labelledby={`${side}-heading`}
       className={cn(
         'relative flex min-h-[420px] min-w-0 flex-col border bg-background lg:min-h-0',
-        dragging && 'border-foreground',
+        dragging && 'border-primary',
       )}
       onDragOver={(event) => {
         if (event.dataTransfer.types.includes('Files')) {
@@ -138,8 +138,19 @@ export function SourcePanel({ side }: { side: Side }) {
         if (file) void loadFile(file)
       }}
     >
-      <header className="flex flex-wrap items-center gap-2 border-b px-3 py-2">
-        <h2 id={`${side}-heading`} className="text-sm font-medium">
+      <header
+        className={cn(
+          'flex flex-wrap items-center gap-2 border-b px-3 py-2',
+          side === 'source' ? 'bg-source-accent/5' : 'bg-target-accent/5',
+        )}
+      >
+        <h2
+          id={`${side}-heading`}
+          className={cn(
+            'text-sm font-medium',
+            side === 'source' ? 'text-source-accent' : 'text-target-accent',
+          )}
+        >
           {SIDE_LABEL[side]}
         </h2>
         <Input
@@ -258,7 +269,7 @@ export function SourcePanel({ side }: { side: Side }) {
         ) : parsed.ok ? (
           <>
             <IconCircleCheck className="size-4 text-success" aria-hidden />
-            <span>
+            <span className="text-success">
               Valid {state.format?.label}
               <span className="text-muted-foreground">
                 {' · '}
@@ -284,7 +295,7 @@ export function SourcePanel({ side }: { side: Side }) {
       </footer>
 
       {dragging && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/80 text-sm font-medium">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-accent/90 text-sm font-medium text-accent-foreground">
           Drop to load into {SIDE_LABEL[side].toLowerCase()}
         </div>
       )}

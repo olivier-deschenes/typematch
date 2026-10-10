@@ -98,7 +98,7 @@ function NoteInput({ id, note }: { id: string; note: string }) {
 const helper = createColumnHelper<typeof features, MappingRow>()
 const columns = helper.columns([
   helper.accessor('source', {
-    header: 'Source field',
+    header: () => <span className="text-source-accent">Source field</span>,
     sortFn: 'text',
     cell: ({ row }) => (
       <span className="font-mono" title={row.original.sourcePath}>
@@ -118,13 +118,13 @@ const columns = helper.columns([
     header: () => <span className="sr-only">maps to</span>,
     cell: () => (
       <IconArrowRight
-        className="size-3.5 text-muted-foreground"
+        className="size-3.5 text-connector"
         aria-label="maps to"
       />
     ),
   }),
   helper.accessor('target', {
-    header: 'Target field',
+    header: () => <span className="text-target-accent">Target field</span>,
     sortFn: 'text',
     cell: ({ row }) => (
       <span className="font-mono" title={row.original.targetPath}>
@@ -152,7 +152,7 @@ const columns = helper.columns([
     cell: ({ getValue }) => {
       const status = getValue()
       return status === 'ok' ? (
-        <span className="text-muted-foreground">OK</span>
+        <span className="text-success">OK</span>
       ) : (
         <span className="flex items-center gap-1 text-warning">
           <IconAlertTriangle className="size-3.5" aria-hidden />
@@ -315,7 +315,9 @@ export function MappingsTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.id === selectedId ? 'selected' : undefined}
-                  className={cn('cursor-pointer')}
+                  className={cn(
+                    'cursor-pointer data-[state=selected]:bg-accent',
+                  )}
                   onPointerEnter={() => mappingUi.actions.hoverMapping(row.id)}
                   onPointerLeave={() => mappingUi.actions.hoverMapping(null)}
                   onClick={() => {

@@ -8,7 +8,7 @@ import { useWorkspace } from '#/hooks/use-workspace'
 import { cn } from '#/lib/utils'
 
 const stepClass =
-  'inline-flex h-7 items-center px-2 text-sm text-muted-foreground transition-colors hover:text-foreground data-[status=active]:bg-muted data-[status=active]:font-medium data-[status=active]:text-foreground'
+  'inline-flex h-7 items-center px-2 text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[status=active]:bg-accent data-[status=active]:font-medium data-[status=active]:text-accent-foreground'
 
 function RequiredProgress() {
   const { required, requiredSatisfied } = useWorkspace()
@@ -28,7 +28,7 @@ function RequiredProgress() {
       <span
         className={cn(
           'font-medium tabular-nums',
-          !complete && 'text-foreground',
+          complete ? 'text-success' : 'text-warning',
         )}
       >
         {requiredSatisfied}/{required.length}

@@ -56,7 +56,7 @@ function Highlight({ text, range }: { text: string; range?: Range }) {
   return (
     <>
       {text.slice(0, range[0])}
-      <mark className="bg-foreground/15 text-foreground">
+      <mark className="bg-warning/20 text-foreground">
         {text.slice(range[0], range[1])}
       </mark>
       {text.slice(range[1])}
@@ -162,7 +162,7 @@ export function FieldRow({
         aria-label={`Connect ${node.label}`}
         data-mapped={mappedCount > 0}
         data-active={isOrigin || isDropTarget || highlighted}
-        className="size-2.5 rounded-full border border-muted-foreground/70 bg-background transition-transform hover:scale-150 hover:border-foreground data-[active=true]:border-foreground data-[active=true]:bg-foreground data-[mapped=true]:border-connector data-[mapped=true]:bg-connector data-[mapped=true]:data-[active=true]:border-foreground data-[mapped=true]:data-[active=true]:bg-foreground"
+        className="size-2.5 rounded-full border border-muted-foreground/70 bg-background transition-transform hover:scale-150 hover:border-primary data-[active=true]:border-primary data-[active=true]:bg-primary data-[mapped=true]:border-connector data-[mapped=true]:bg-connector data-[mapped=true]:data-[active=true]:border-primary data-[mapped=true]:data-[active=true]:bg-primary"
         onPointerDown={(event) => beginDrag(field, event)}
         onClick={(event) => {
           event.stopPropagation()
@@ -184,11 +184,11 @@ export function FieldRow({
       data-field-path={node.path}
       className={cn(
         'group/row absolute inset-x-0 top-0 flex items-center text-xs select-none',
-        'hover:bg-muted/60 aria-selected:bg-muted',
-        highlighted && 'bg-muted',
-        isOrigin && 'bg-muted',
+        'hover:bg-muted/60 aria-selected:bg-accent',
+        highlighted && 'bg-accent hover:bg-accent',
+        isOrigin && 'bg-accent hover:bg-accent',
         isDropTarget &&
-          'bg-muted outline outline-1 -outline-offset-1 outline-foreground',
+          'bg-accent outline outline-1 -outline-offset-1 outline-primary hover:bg-accent',
         awaitingTarget && 'cursor-crosshair',
       )}
       style={{ height: ROW_HEIGHT, transform: `translateY(${top}px)` }}
@@ -271,7 +271,7 @@ export function FieldRow({
           </span>
         )}
         {requiredState === 'satisfied' && (
-          <span className="flex shrink-0 items-center text-muted-foreground">
+          <span className="flex shrink-0 items-center text-success">
             <IconAsterisk className="size-3" aria-hidden />
             <span className="sr-only">Required</span>
           </span>

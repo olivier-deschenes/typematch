@@ -68,7 +68,7 @@ export function RequiredList() {
                     Not in document
                   </span>
                 ) : satisfied ? (
-                  <span className="flex items-center gap-1 text-muted-foreground">
+                  <span className="flex items-center gap-1 text-success">
                     <IconCircleCheck
                       className="size-3.5 text-success"
                       aria-hidden
