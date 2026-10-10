@@ -12,6 +12,7 @@ import {
 import { Button } from '#/components/ui/button'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -54,6 +55,7 @@ const FILTERS: Array<{ value: FilterMode; label: string }> = [
 
 function SortMenu({ side }: { side: Side }) {
   const sort = useSelector(mappingUi, (s) => s.sort[side])
+  const linked = useSelector(mappingUi, (s) => s.sortLinked)
   const Icon =
     sort.by === 'none'
       ? IconArrowsSort
@@ -80,7 +82,7 @@ function SortMenu({ side }: { side: Side }) {
           {text}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="text-muted-foreground">
           Sort by
         </DropdownMenuLabel>
@@ -115,6 +117,16 @@ function SortMenu({ side }: { side: Side }) {
             Descending
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuCheckboxItem
+          checked={linked}
+          onCheckedChange={(checked) =>
+            mappingUi.actions.setSortLinked(side, checked)
+          }
+          onSelect={(event) => event.preventDefault()}
+        >
+          Same sort on both sides
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

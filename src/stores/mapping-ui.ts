@@ -23,6 +23,8 @@ export interface MappingUiState {
   collapsed: Record<Side, ReadonlySet<string>>
   filter: Record<Side, FilterMode>
   sort: Record<Side, TreeSort>
+  /** Sorting one side applies the same sort to the other */
+  sortLinked: boolean
 }
 
 const initialState: MappingUiState = {
@@ -35,6 +37,7 @@ const initialState: MappingUiState = {
   collapsed: { source: new Set(), target: new Set() },
   filter: { source: 'all', target: 'all' },
   sort: { source: DEFAULT_SORT, target: DEFAULT_SORT },
+  sortLinked: true,
 }
 
 export const mappingUi = createStore(initialState, ({ setState }) => ({
@@ -93,6 +96,19 @@ export const mappingUi = createStore(initialState, ({ setState }) => ({
     setState((s) => ({ ...s, filter: { ...s.filter, [side]: filter } }))
   },
   setSort(side: Side, sort: TreeSort) {
-    setState((s) => ({ ...s, sort: { ...s.sort, [side]: sort } }))
+    setState((s) => ({
+      ...s,
+      sort: s.sortLinked
+        ? { source: sort, target: sort }
+        : { ...s.sort, [side]: sort },
+    }))
+  },
+  /** Linking adopts `side`'s sort on both sides. */
+  setSortLinked(side: Side, linked: boolean) {
+    setState((s) => ({
+      ...s,
+      sortLinked: linked,
+      sort: linked ? { source: s.sort[side], target: s.sort[side] } : s.sort,
+    }))
   },
 }))
