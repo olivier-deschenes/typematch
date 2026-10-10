@@ -1,3 +1,4 @@
+import { fieldKey, mappingKey } from '#/lib/keys'
 import type { ArrayView, Side } from '#/lib/model/types'
 import {
   arrayViewsCollection,
@@ -12,9 +13,7 @@ import type {
   SourceDoc,
 } from './collections'
 
-export const fieldKey = (side: Side, path: string) => `${side}:${path}`
-export const mappingKey = (sourcePath: string, targetPath: string) =>
-  `${sourcePath}=>${targetPath}`
+export { fieldKey, mappingKey }
 
 export function saveSourceDoc(doc: SourceDoc) {
   if (sourcesCollection.has(doc.id)) {
